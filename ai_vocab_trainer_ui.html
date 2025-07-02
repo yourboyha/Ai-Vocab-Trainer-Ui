@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI ผู้ช่วยฝึกอ่านคำศัพท์</title>
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      background-color: #f5faff;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #2b7a78;
+    }
+    .card {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      margin-top: 20px;
+    }
+    .word {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #17252a;
+    }
+    .buttons button {
+      font-size: 20px;
+      padding: 15px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 12px;
+      background-color: #3aafa9;
+      color: white;
+      cursor: pointer;
+    }
+    .buttons button:hover {
+      background-color: #2b7a78;
+    }
+    .result {
+      font-size: 24px;
+      color: #333;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI ผู้ช่วยฝึกอ่านคำศัพท์</h1>
+
+  <div class="card">
+    <div class="word" id="vocab-word">แมว</div>
+
+    <div class="buttons">
+      <button onclick="speakWord()">🔊 ฟังคำ</button>
+      <button onclick="startRecognition()">🎤 พูดคำนี้</button>
+      <button onclick="nextWord()">➡️ คำถัดไป</button>
+    </div>
+
+    <div class="result" id="result-text">พูดคำนี้ให้เหมือนเสียงตัวอย่างนะ!</div>
+  </div>
+
+  <script>
+    const words = ["แมว", "ปลา", "รถ", "บ้าน", "หมา"];
+    let index = 0;
+
+    function speakWord() {
+      const msg = new SpeechSynthesisUtterance(document.getElementById("vocab-word").innerText);
+      msg.lang = "th-TH";
+      window.speechSynthesis.speak(msg);
+    }
+
+    function startRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = "th-TH";
+
+      recognition.onstart = () => {
+        document.getElementById("result-text").innerText = "กำลังฟัง... พูดเลย!";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        const correct = document.getElementById("vocab-word").innerText;
+        if (transcript === correct) {
+          document.getElementById("result-text").innerText = "✅ เก่งมาก! พูดถูกแล้ว";
+        } else {
+          document.getElementById("result-text").innerText = `❌ ได้ยินว่า: "${transcript}" ลองใหม่อีกครั้งนะ`;
+        }
+      };
+
+      recognition.start();
+    }
+
+    function nextWord() {
+      index = (index + 1) % words.length;
+      document.getElementById("vocab-word").innerText = words[index];
+      document.getElementById("result-text").innerText = "พูดคำนี้ให้เหมือนเสียงตัวอย่างนะ!";
+    }
+  </script>
+</body>
+</html>
